@@ -8,36 +8,36 @@ M126"""
 
 START_CODE = """
 (start code)
-M106
-G4 P100 
+M106 (open left valve)
+G4 P100 (pause .1s)
 (end of start code)
 """
 
 STOP_CODE = """
 (stop code)
-M107
-M126
-G4 P100
-M127 
+M107 (close left valve)
+M126 (open right valve)
+G4 P100 (pause .1s)
+M127 (close right valve)
 (end of stop code)
 """
 
 WARMUP_SEQUENCE = """
 (warmup sequence)
-G21
-G90
-G92 X0 Y0 Z0
-G00 Z0 F1100.00 
+G21 (Programming in mm)
+G90 (Absolute programing)
+G92 X0 Y0 Z0 (set 0 point)
+G00 Z0 F1100.00 (Feed rate) 
 (end of warmup)
 """
 
 COOLDOWN_SEQUENCE = """
 (cool down)
-M107
-M126
-G4 P100
-M127
-G00 Z10 F200 
+M107 (close left valve)
+M126 (open right valve)
+G4 P100 (pause .1s)
+M127 (close right valve)
+G00 Z10 F200
 (end of cool down sequence)
 """
 
@@ -46,11 +46,24 @@ class Point:
     def __init__(self,x,y):
         self.x = float(x)
         self.y = float(y)
+        
+    def gcode(self, resolution):
+        genCode = []
+        genCode.append("G01 X%s Y%s (move to point)" 
+            % (self.x * resolution, self.y * resolution))
+        genCode.append(ALT_START)
+        genCode.append("G04 P2000 (Pause for 2s)")
+        genCode.append(ALT_STOP)
+        
+        return "\n".join(genCode)
     
 class Line:
     def __init__(self,p1,p2):
         self.p1 = p1
         self.p2 = p2
+        
+    def gcode(self, resolution):
+        return None
         
 class Grid:
 
@@ -71,16 +84,13 @@ class Grid:
         return w / r
         
     def append(self, o):
-        self.genCode.append("G01 X%s Y%s F5 (point -> speed 5 per inch)" % (o.x * self.resolution, o.y * self.resolution))
-        self.genCode.append("G04 P2 (Pause for 2s)")
-        self.genCode.append(ALT_START)
-        self.genCode.append(ALT_STOP)
+        self.genCode.append(o)
     
     def generate(self):
         sys.stdout.writelines(WARMUP_SEQUENCE)
         sys.stdout.writelines(START_CODE)
         for line in self.genCode:
-            sys.stdout.write(line + "\n")
+            sys.stdout.write(line.gcode(self.resolution) + "\n")
         sys.stdout.writelines(STOP_CODE)
         sys.stdout.writelines(COOLDOWN_SEQUENCE)
         
