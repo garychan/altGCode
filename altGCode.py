@@ -64,7 +64,19 @@ class Line:
         
     def gcode(self, resolution):
         return None
-        
+      
+
+class Circle:
+    """this function is not yet finished"""
+    def __init__(self, centerPoint, radius):
+        self.centerPoint = centerPoint
+        self.radius = raidus
+    def gcode(self, resolution):
+        genCode = []
+        genCode.append("G01 X%s Y%s (move to first circle point)"
+                       %(self.centerPoint.x - radius, self.centerPoint.y))
+
+                      
 class Grid:
 
     def __init__(self, width, height, resolution): 
