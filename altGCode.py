@@ -1,14 +1,10 @@
 import sys
 
 
-ALT_START = """
-M106
-"""
+ALT_START = "M106"
 
-ALT_STOP = """
-M107
-M126
-"""
+ALT_STOP = """M107
+M126"""
 
 START_CODE = """
 (start code)
