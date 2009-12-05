@@ -75,7 +75,7 @@ class Grid:
         return w / r
         
     def append(self, o):
-        self.genCode.append("G01 X%s Y%s F5 (point -> speed 5 per inch)" % (o.x, o.y))
+        self.genCode.append("G01 X%s Y%s F5 (point -> speed 5 per inch)" % (o.x * self.resolution, o.y * self.resolution))
         self.genCode.append("G04 P2 (Pause for 2s)")
         self.genCode.append(ALT_START)
         self.genCode.append(ALT_STOP)
@@ -83,7 +83,6 @@ class Grid:
     def generate(self):
         sys.stdout.writelines(WARMUP_SEQUENCE)
         sys.stdout.writelines(START_CODE)
-        sys.stdout.writelines("G00 X%s Y%s (go to top left corner -> making axis positive)\n" % ((-self.width/2), (-self.height/2)))
         for line in self.genCode:
             sys.stdout.write(line + "\n")
         sys.stdout.writelines(STOP_CODE)
