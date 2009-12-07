@@ -1,4 +1,4 @@
-import sys
+import sys, math
 
 
 ALT_START = "M106"
@@ -68,14 +68,23 @@ class Line:
 
 class Circle:
     """this function is not yet finished"""
-    def __init__(self, centerPoint, radius):
+    def __init__(self, centerPoint, radius, density):
         self.centerPoint = centerPoint
-        self.radius = raidus
+        self.radius = radius
+        self.density = density
+        
     def gcode(self, resolution):
         genCode = []
-        genCode.append("G01 X%s Y%s (move to first circle point)"
-                       %(self.centerPoint.x - radius, self.centerPoint.y))
-
+        x_axis = 0
+        
+        for i in xrange(0, self.density):
+            inst = ((i * 2 * math.pi) / self.density) * self.radius
+            x_axis = math.cos(inst)
+            y_axis = math.sin(inst)
+            genCode.append("G01 X%s Y%s (move to circle point)"
+                       % (x_axis, y_axis))
+                       
+        return "\n".join(genCode)
                       
 class Grid:
 
